@@ -1,0 +1,26 @@
+/* v0.3 – App-Grundfarbe und Akzentfarbe unabhängig anpassbar. */
+.app-shell{background:var(--app-bg-bottom,#171720)}
+.theme-clean .ambient{
+ background-image:linear-gradient(180deg,var(--app-bg-top,#252432) 0%,var(--app-bg-middle,#191923) 56%,var(--app-bg-bottom,#171720) 100%);
+}
+.theme-dreamy .ambient{
+ background-image:radial-gradient(ellipse 85% 38% at 80% -10%,rgba(var(--accent-rgb),.10),transparent),linear-gradient(180deg,var(--app-bg-top,#2b2439),var(--app-bg-middle,#201c2b) 47%,var(--app-bg-bottom,#191720));
+}
+.theme-neon .ambient{
+ background-image:radial-gradient(ellipse 90% 42% at 50% -12%,rgba(var(--accent-rgb),.16),transparent),linear-gradient(180deg,var(--app-bg-top,#232031),var(--app-bg-bottom,#171720));
+}
+.glass-strong{background:var(--app-strong,#272432)}
+.bottom-nav{background:var(--app-nav,#1b1a24)}
+.hero-controls{background:var(--app-controls,#1d1c26)}
+.search-field,.select-compact{background:var(--app-pane,#22212c)}
+.timeline-board{background:var(--app-pane,#1e1d28)}
+.timeline-tick span{background:var(--app-strong,#262331)}
+.tabs{background:var(--app-pane2,#262331)}
+.card-status,.owner-bubble{background:var(--app-strong,#24202f)}
+.pill-btn{background:var(--app-pane2,#2a2734)}
+.quick-btn,.theme-option,.library-list-item{background:var(--app-pane,#22212c)}
+.theme-option.active{background:rgba(var(--accent-rgb),.13)}
+.color-setting-description{font-size:12px;line-height:1.5;color:#b8b3c3;margin:5px 0 12px}
+.app-color-swatches{padding-bottom:3px}
+.app-color-swatches .swatch{border:1px solid rgba(255,255,255,.16)}
+.app-color-swatches .swatch.active{box-shadow:0 0 0 2px var(--accent),0 0 0 4px #1a1922}

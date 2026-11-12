@@ -1,0 +1,84 @@
+/* PAL v0.7: sanft verspielt, markierte Typografie, korrekte Profilbilder, Bildausschnitt-Editor */
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&display=swap');
+
+/* Sichtbare Bilder sollen den Kreis lückenlos ausfüllen, unabhängig von Karten-Stilen. */
+.avatar,.avatar.selected,.avatar.alt,.avatar-button .avatar,.profile-main-avatar{
+  display:inline-grid!important;position:relative!important;box-sizing:border-box!important;
+  width:38px;height:38px;min-width:38px;min-height:38px;flex-shrink:0;
+  aspect-ratio:1/1!important;border-radius:50%!important;overflow:hidden!important;
+  isolation:isolate;clip-path:circle(50% at 50% 50%);
+}
+.avatar.has-photo{padding:0!important;}
+.avatar-photo,.avatar .avatar-photo{
+  display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  max-width:none;max-height:none;object-fit:cover!important;object-position:center center!important;
+  border-radius:50%!important;clip-path:circle(50% at 50% 50%);
+}
+.profile-main-avatar{width:60px!important;height:60px!important;min-width:60px!important;min-height:60px!important;flex:0 0 60px!important}
+.avatar-button{flex:0 0 38px;align-items:center;justify-content:center}
+
+/* Die alte Cinematic-Serife gehört jetzt zu Playful. Knapp variierende Rundungen kommen aus JavaScript. */
+.style-playful .brand-title,.style-playful .page-title,.style-playful .section-title,
+.style-playful .credit-title,.style-playful .setting-section h3,.style-playful .hero-heading h2,
+.style-playful .detail-hero-content h1,.style-playful .diary-entry h3,.style-playful .modal-head h2,
+.style-playful .profile-box h2,.style-playful .recent-actions-head b{
+  font-family:Georgia,'Times New Roman',serif;font-weight:600;letter-spacing:-.025em;
+}
+.style-playful .hero-project,.style-playful .recent-cover,.style-playful .cover-card,
+.style-playful .recent-card.expanded,.style-playful .quick-btn,.style-playful .profile-box,
+.style-playful .credit-panel,.style-playful .diary-entry,.style-playful .standalone-timer,
+.style-playful .design-style-option{
+  transition:border-radius .3s ease,background-color .24s ease;
+  overflow:hidden; /* Art und hochgeladene Fotos werden immer mit der Form beschnitten. */
+}
+.style-playful .recent-cover-art,.style-playful .poster-image,.style-playful .hero-art{
+  background-size:cover;background-position:center;inset:-1px; /* Beim Clipping keine hellen Spalten. */
+}
+.style-playful .sample-playful{font-family:Georgia,serif}
+
+/* Cinematic: edle High-Contrast-Serife, aber Bedientext weiterhin serifenlos. */
+.style-cinematic .brand-title,.style-cinematic .page-title,.style-cinematic .section-title,
+.style-cinematic .credit-title,.style-cinematic .setting-section h3,.style-cinematic .hero-heading h2,
+.style-cinematic .detail-hero-content h1,.style-cinematic .diary-entry h3,.style-cinematic .modal-head h2,
+.style-cinematic .profile-box h2,.style-cinematic .recent-actions-head b,
+.style-cinematic .cover-info h3,.style-cinematic .recent-cover-copy b{
+  font-family:'Bodoni Moda',Didot,'Times New Roman',serif;
+  font-weight:600;letter-spacing:-.02em;line-height:1.12;
+}
+.sample-cinematic{font-family:'Bodoni Moda',Didot,serif;font-weight:500}
+
+/* Neon: der gewählte Grundton bleibt unangetastet. Helle Flächen bekommen feinere Schatten. */
+.style-neon.tone-light{--neon-glow:0 0 2px rgba(var(--accent-rgb),.35),0 0 6px rgba(var(--accent-rgb),.23)}
+.style-neon.tone-light .brand-title,.style-neon.tone-light .page-title,
+.style-neon.tone-light .section-title,.style-neon.tone-light .credit-title,
+.style-neon.tone-light .setting-section h3{color:var(--ui-text);text-shadow:var(--neon-glow)}
+.style-neon.tone-light .credit-panel,.style-neon.tone-light .standalone-timer,
+.style-neon.tone-light .profile-box,.style-neon.tone-light .quick-btn,
+.style-neon.tone-light .hero-project,.style-neon.tone-light .recent-card.expanded,
+.style-neon.tone-light .diary-entry,.style-neon.tone-light .timeline-board{
+  box-shadow:0 0 7px rgba(var(--accent-rgb),.15),inset 0 0 4px rgba(var(--accent-rgb),.07)!important;
+}
+
+/* Cropping layer above the existing form/dialog: form contents remain untouched. */
+#crop-root{position:fixed;inset:0;z-index:90;pointer-events:none}
+.crop-overlay{position:absolute;inset:0;background:rgba(15,23,29,.65);display:flex;justify-content:center;align-items:flex-end;pointer-events:auto;backdrop-filter:blur(3px)}
+.crop-sheet{box-sizing:border-box;width:min(520px,100vw);max-height:95dvh;overflow-y:auto;background:#F9F7F1;color:#26343A;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 32px #0003}
+.crop-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.crop-header h2{font-size:20px;margin:0}
+.crop-sheet p{color:#52636D;font-size:12px;line-height:1.5;margin:6px 0 12px}
+.crop-stage{display:flex;align-items:center;justify-content:center;min-height:0;margin:8px auto;background:#E8E9E4;border-radius:13px;padding:8px;max-width:100%;}
+#crop-canvas{display:block;height:auto;width:auto;max-width:100%;max-height:45dvh;object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;background:#D6DBD7;box-shadow:0 3px 12px #0002}
+#crop-canvas:active{cursor:grabbing}
+.crop-zoom{display:flex;gap:12px;align-items:center;font-size:13px;font-weight:650;margin:14px 0;color:#27343D}
+.crop-zoom input{flex:1;min-width:0;accent-color:#71C9A3}
+.crop-actions{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
+.crop-actions button{flex:1 0 auto;font-size:12px;padding:11px 9px}
+.crop-sheet .secondary-btn{background:#E9EEEA;color:#25343A}
+.crop-sheet .primary-btn{background:#7BCFA7;color:#26343A}
+#cover-editor-tools,#background-editor-tools{display:grid;gap:7px;justify-items:start;margin-bottom:8px}
+#cover-editor-tools .form-image-preview{width:130px;height:166px;object-fit:cover;margin:3px 0}
+#background-editor-tools .form-image-preview{width:230px;height:130px;object-fit:cover;margin:3px 0}
+#cover-editor-tools:empty,#background-editor-tools:empty{display:none}
+#cover-editor-tools .secondary-btn,#background-editor-tools .secondary-btn{font-size:12px;padding:9px 11px}
+#cover-editor-tools .field-check,#background-editor-tools .field-check{width:100%}
+@media(prefers-reduced-motion:reduce){.style-playful .hero-project,.style-playful .recent-cover,.style-playful .cover-card,.style-playful .quick-btn{transition:none!important}}

@@ -1,0 +1,150 @@
+/* Version 0.5 – Freundlich, verspielt, matt. Inspiriert von klarer, farbenfroher
+   Konsolen-App-Bedienung; keine Nachbildung eines fremden App-Designs. */
+:root{color-scheme:light;--ui-text:#28343b;--ui-muted:#65737b;--ui-line:rgba(35,53,63,.09);--ui-on-accent:#203138}
+*{-webkit-tap-highlight-color:transparent}
+body{background:#e8e9e8;color:var(--ui-text)}
+.app-shell{background:var(--app-bg,#f7f4eb);color:var(--ui-text);box-shadow:none;--line:var(--ui-line)}
+.ambient{background:var(--app-bg,#f7f4eb);background-image:none;}
+.ambient::after{display:none}
+.app-shell .ambient:not(.has-custom-background){background:var(--app-bg,#f7f4eb);background-image:none}
+.view{scrollbar-color:#abb9bd transparent}
+.page{animation:none}
+.brand-title,.page-title,.section-title,.credit-title,.setting-section h3{color:var(--ui-text);text-shadow:none}
+.brand-title{font-size:23px;letter-spacing:-.035em;font-weight:730}
+.brand-tag{color:var(--ui-muted);font-size:11px;letter-spacing:0}
+.page-title{font-size:25px;font-weight:730}
+.page-kicker,.subhead{color:var(--ui-muted);letter-spacing:0}
+.muted,.inline-note,.legend,.color-setting-description{color:var(--ui-muted)}
+.section-title,.credit-title{font-size:16px;font-weight:700}
+.section-line .action-text{color:var(--ui-text);opacity:.72;font-weight:630}
+.glass,.glass-soft,.glass-strong,.profile-box{background:var(--app-pane);border:0;box-shadow:none;backdrop-filter:none}
+.glass-soft{background:var(--app-pane2)}
+.glow{box-shadow:none!important}
+.icon-btn,.plain-btn{color:var(--ui-text)}
+.icon-btn:hover,.plain-btn:hover{background:var(--app-pane2)}
+/* Profilfotos wirken wie freundlich gefärbte Spiel-Avatare. */
+.avatar{background:#A7DFC4;border:2px solid var(--app-pane);color:#23493b;box-shadow:none;margin-left:-5px}
+.avatar.alt{background:#B9D5EE;color:#27475e}
+.avatar.selected{border:2px solid var(--accent);box-shadow:0 0 0 2px var(--app-pane);transform:none}
+/* Neutrale Schaltflächen, sanfte Farbe statt Farbverlauf */
+.pill-btn,.secondary-btn{background:var(--app-pane2);border:0;border-radius:11px;color:var(--ui-text);box-shadow:none;font-weight:630}
+.primary-btn,.pill-btn.active,.filter-btn.active,.tab.active,.timer-btn.main,.floating-add{background:var(--accent);color:var(--ui-on-accent);border:0;box-shadow:none;text-shadow:none;font-weight:700}
+.primary-btn{border-radius:12px;padding:12px 17px}
+.secondary-btn{padding:11px 14px}
+.danger-btn{background:#fbe1df;color:#9d3541;border:0;box-shadow:none}
+/* Klare Zeitguthaben-Anzeige ohne Glass/Gradient-Optik */
+.credit-panel{background:var(--app-pane);padding:15px;border-radius:18px}
+.credit-scale{background:var(--app-pane2);border:0;border-radius:14px;height:60px;padding:0 14px}
+.credit-fill{background:var(--accent);opacity:.5}
+.credit-middle{background:var(--ui-line);width:2px}
+.credit-knob{background:var(--ui-text);top:11px;bottom:11px;width:4px;box-shadow:none}
+.credit-person{color:var(--ui-text);font-size:12px;line-height:1.5}
+.credit-person span{font-weight:750}
+.credit-foot,.credit-foot b{color:var(--ui-muted)}
+.credit-foot b{font-weight:700;color:var(--ui-text)}
+/* Plakat darf bunt sein. Nur für das Lesen der Schrift direkt auf Bildern leicht verdunkeln. */
+.hero-project{border:none;border-radius:18px;box-shadow:none;background:var(--app-pane)}
+.hero-art{filter:none}
+.hero-art:after{background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.06) 35%,rgba(0,0,0,.54))}
+.hero-heading{color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.5)}
+.hero-heading h2{font-size:24px;font-weight:750;line-height:1.12}
+.hero-top .tag{background:#ffffffee;color:#30434a;border:0}
+.hero-top .pill-btn{background:#ffffffee;color:#30434a}
+.hero-controls{background:var(--app-pane);border:0;backdrop-filter:none;border-radius:12px;color:var(--ui-text)}
+.timer-time{color:var(--ui-text);font-weight:700}
+.timer-btn{background:var(--app-pane2);border:0;color:var(--ui-text);border-radius:14px}
+.timer-btn.main{border-radius:14px;color:var(--ui-on-accent)}
+/* Streaming-Bibliothek: kräftige Cover, schlichte Karten. */
+.mini-poster,.cover-card{border:0;box-shadow:none;border-radius:14px}
+.mini-poster:after,.cover-card:after{background:linear-gradient(transparent 15%,rgba(0,0,0,.16) 42%,rgba(0,0,0,.78) 100%)}
+.mini-poster .poster-meta b,.cover-info h3{text-shadow:0 1px 3px rgba(0,0,0,.36);font-weight:700}
+.mini-poster .poster-meta span,.cover-info .sub{color:#f3f2f7}
+.card-status,.owner-bubble{background:#fffef0ee;color:#2a3740;border:0}
+.library-list-item{background:var(--app-pane);border:0;color:var(--ui-text)}
+.library-list-item .li-info p{color:var(--ui-muted)}
+/* Vier fröhliche Schnellaktionen statt vier luxuriöser Glasbuttons. */
+.quick-grid{gap:11px}
+.quick-btn{background:var(--app-pane);border:0;box-shadow:none;border-radius:16px;min-height:88px;color:var(--ui-text);font-size:12px;font-weight:650;gap:8px}
+.quick-btn .quick-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:#D9F3E5;color:#427a60;font-size:25px}
+.quick-btn:nth-child(2) .quick-icon{background:#E0EAFA;color:#567ba8}
+.quick-btn:nth-child(3) .quick-icon{background:#FCE6D5;color:#a77349}
+.quick-btn:nth-child(4) .quick-icon{background:#F2E3FA;color:#8867a9}
+/* Bottom-Navigation bleibt an derselben Stelle, aber ist nun eine einfache Fläche. */
+.bottom-nav{background:var(--app-nav);border:0;border-top:1px solid var(--ui-line);border-radius:18px 18px 0 0;box-shadow:none;backdrop-filter:none}
+.nav-item{color:var(--ui-muted);font-size:10px;border-radius:13px}
+.nav-item .nav-icon{color:inherit}
+.nav-item.active{background:var(--accent);color:var(--ui-on-accent);box-shadow:none}
+/* Filter, Suche und Tabs: keine Leuchtkanten oder transparenten Felder. */
+.filter-btn{background:var(--app-pane);border:0;color:var(--ui-text);font-weight:600;border-radius:12px;padding:10px 13px}
+.filter-btn.active{background:var(--accent);color:var(--ui-on-accent)}
+.search-field,.select-compact{background:var(--app-pane);border:0;color:var(--ui-text);border-radius:12px}
+.search-field::placeholder{color:var(--ui-muted)}
+.select-compact option{color:#28343b}
+.floating-add{color:var(--ui-on-accent);box-shadow:none}
+/* Zeitreise: flaches Kalender-Board mit gut erkennbaren Zeitspuren. */
+.timeline-board{background:var(--app-pane);border:0;border-radius:17px;box-shadow:none;scrollbar-color:#b9c9c3 transparent}
+.timeline-line{background:var(--accent);box-shadow:none}
+.timeline-tick{border-color:var(--ui-line)}
+.timeline-tick span{background:var(--app-pane);color:var(--ui-muted)}
+.time-block{border:0!important;box-shadow:none;border-radius:11px}
+.time-block:before{background:linear-gradient(180deg,rgba(17,25,27,.34),rgba(17,25,27,.78))}
+.time-block b,.time-block span{color:#fff;text-shadow:0 1px 3px #0007}
+.now-line{border-color:#7eae93}
+.now-line:after{background:#def2d9;color:#285440}
+.timeline-empty,.legend{color:var(--ui-muted)}
+.highlight-card{color:var(--ui-text)}
+.highlight-card small{color:var(--ui-muted)}
+/* Tagebuch: ruhige Papierkarten, Akzente über Punkte statt glühende Linien. */
+.detail-hero:before{background:linear-gradient(180deg,rgba(15,25,30,.26),transparent 26%,rgba(15,25,30,.60) 100%)}
+.detail-hero-content h1{color:#fff;text-shadow:0 2px 6px #0007}
+.detail-hero-content .muted{color:#f1f4f4}
+.detail-hero .icon-btn{background:#ffffffee;color:#25323a}
+.detail-meta span{background:var(--app-pane);border:0;color:var(--ui-text)}
+.tabs{background:var(--app-pane);border:0;border-radius:13px}
+.tab{border-radius:10px;color:var(--ui-muted);font-weight:600}
+.tab.active{color:var(--ui-on-accent)}
+.diary-feed{border-color:var(--accent)}
+.diary-entry{background:var(--app-pane);border:0;color:var(--ui-text)}
+.diary-entry:before{border-color:var(--app-bg);box-shadow:none}
+.diary-date{color:var(--ui-muted)}
+.diary-entry h3{color:var(--ui-text)}
+.diary-entry p{color:var(--ui-text)}
+.diary-actions,.diary-actions button{color:var(--ui-muted)}
+.tag{background:var(--app-pane2);border:0;color:var(--ui-text)}
+.stat-card span{color:var(--ui-muted)}
+.empty-state{border:1px dashed var(--ui-line);background:var(--app-pane);color:var(--ui-muted)}
+/* Einstellungen: freundliche Farbchips und einfache Flächen. */
+.profile-box{background:var(--app-pane);border-radius:17px}
+.profile-box h2,.setting-section h3{color:var(--ui-text)}
+.profile-box p,.setting-row small,.color-setting-description{color:var(--ui-muted)}
+.setting-row{border-color:var(--ui-line);color:var(--ui-text)}
+.swatches{gap:12px;margin:14px 0}
+.swatch{width:42px;height:42px;border:3px solid transparent;box-shadow:inset 0 0 0 1px #5b6d7024}
+.swatch.active,.app-color-swatches .swatch.active{border-color:var(--app-pane);box-shadow:0 0 0 2px var(--ui-text)}
+/* Modale: dieselbe neutrale Papiersprache, nicht plötzlich wieder Dark Luxury. */
+.modal-overlay{background:#1d273170;backdrop-filter:blur(2px)}
+.modal-sheet{background:var(--app-bg);color:var(--ui-text);border:0;border-radius:20px 20px 0 0;box-shadow:none}
+.modal-head h2{color:var(--ui-text)}
+.field>span{color:var(--ui-text)}
+.field input:not([type=checkbox]):not([type=color]):not([type=range]):not([type=file]),
+.field select,.field textarea{background:var(--app-pane);color:var(--ui-text);border:1px solid var(--ui-line);border-radius:12px;color-scheme:light}
+.field input::placeholder,.field textarea::placeholder{color:var(--ui-muted)}
+.field select option{background:var(--app-pane);color:var(--ui-text)}
+.field-check,.form-hint,.input-file{color:var(--ui-muted)}
+.input-file{background:var(--app-pane);border:1px dashed var(--ui-line)}
+.profile-choice{background:var(--app-pane);color:var(--ui-text);border:0}
+.profile-choice small{color:var(--ui-muted)}
+#toast{background:var(--ui-text);color:var(--app-bg);box-shadow:none}
+/* Eigene dunkle Farben bleiben mit gut lesbarer Schrift nutzbar. */
+[data-tone="dark"]{color-scheme:dark}
+[data-tone="dark"] .field input:not([type=checkbox]):not([type=color]):not([type=range]):not([type=file]),
+[data-tone="dark"] .field select,[data-tone="dark"] .field textarea{color-scheme:dark}
+[data-tone="dark"] .quick-btn .quick-icon{color:#427a60}
+[data-tone="dark"] .card-status,[data-tone="dark"] .owner-bubble{background:#eff3ed;color:#243339}
+@media(min-width:640px){body{background:#e9eae8}.app-shell{border:0;border-radius:22px;box-shadow:none}}
+@media(prefers-reduced-motion:reduce){.page{animation:none}}
+
+/* Dateiuploads in den Einstellungen bleiben kompakt und eindeutig bedienbar. */
+#theme-background{width:100%;min-width:0;max-width:100%;font-size:12px;color:var(--ui-muted)}
+#theme-background::file-selector-button{font:inherit;font-weight:650;border:0;border-radius:9px;padding:9px 11px;margin:0 9px 4px 0;background:var(--app-pane2);color:var(--ui-text);cursor:pointer}
+.field input[type=color]{min-width:70px}

@@ -1,0 +1,113 @@
+/* Patrick & Albert v0.6 — Timers, responsive expanding posters, four visual styles */
+:root{--motion-duration:300ms}
+.app-shell{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Arial,sans-serif}
+button{touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+/* Profile */
+.avatar-button{border:0;background:none;padding:0;margin-left:-5px;display:inline-flex;border-radius:50%;cursor:pointer}
+.avatar-button .avatar{margin:0;width:38px;height:38px;display:inline-grid;place-items:center;overflow:hidden}
+.avatar-button.selected .avatar{border-color:var(--accent);box-shadow:0 0 0 2px var(--app-pane)}
+.avatar-photo{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+.profile-main-avatar{flex:0 0 60px;width:60px!important;height:60px!important;font-size:20px!important;display:inline-grid;place-items:center;overflow:hidden;margin:0!important}
+.profile-box{gap:11px;flex-wrap:wrap}
+.profile-box>div{flex:1;min-width:110px}
+.profile-box>.pill-btn{flex:0 0 auto}
+.photo-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:9px}
+.photo-upload,.text-button{font-size:12px;font-weight:750;color:var(--ui-text);cursor:pointer}
+.photo-upload input{display:none}
+.text-button{border:0;background:transparent;text-decoration:underline}
+/* Timer: independent card only exists when no projectId is set */
+.standalone-timer{padding:18px;border-radius:18px;display:flex;flex-direction:column;gap:12px;transition:transform .32s ease,opacity .32s ease}
+.timer-card-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:750;font-size:13px}
+.timer-state{font-size:11px;font-weight:600;color:var(--ui-muted);padding:5px 8px;background:var(--app-pane2);border-radius:8px}
+.standalone-controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.standalone-controls .timer-time{font-size:25px;min-width:116px;flex:1}
+.assign-inline{border:0;border-radius:11px;background:var(--app-pane2);padding:11px;color:var(--ui-text);font-size:12px;cursor:pointer;text-align:center;font-weight:700}
+.timer-inline-note{margin-top:9px}
+.detail-start-row{margin:8px 0 16px;display:flex}
+.detail-start-row>button{flex:1}
+.pending-book{min-width:40px}
+/* Recently used: expandable covers reflow the grid instead of overlaying siblings. */
+.poster-strip.recent-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;overflow:visible;padding:2px 0 7px;align-items:start}
+.recent-card{position:relative;min-width:0;overflow:visible;transform-origin:top left;isolation:isolate}
+.recent-card.expanded{grid-column:1/-1;display:grid;grid-template-columns:minmax(96px,33%) 1fr;gap:12px;background:var(--app-pane);border-radius:16px;padding:10px;min-height:173px}
+.recent-cover{border:0;background:#262337;display:block;width:100%;aspect-ratio:0.72;position:relative;border-radius:13px;overflow:hidden;cursor:pointer;padding:0;text-align:left;color:white}
+.recent-card.expanded .recent-cover{height:160px;aspect-ratio:auto}
+.recent-cover-art{position:absolute;inset:0;background-size:cover;background-position:center;display:block}
+.recent-cover:after{content:"";position:absolute;inset:38% 0 0;background:linear-gradient(transparent,rgba(10,9,19,.84))}
+.recent-cover-copy{position:absolute;bottom:9px;left:5px;right:5px;z-index:1;text-align:center;color:white;text-shadow:0 1px 5px #0008}
+.recent-cover-copy b{font-size:13px;line-height:1.15;font-weight:750;display:block;overflow-wrap:anywhere}
+.recent-cover-copy small{font-size:10px;display:block;margin-top:4px}
+.recent-actions{display:flex;flex-direction:column;justify-content:center;gap:8px;min-width:0;animation:recentActionsIn .3s ease both}
+.recent-actions-head{margin-bottom:4px;min-width:0}
+.recent-actions-head b{display:block;font-size:15px;line-height:1.18;overflow-wrap:anywhere}
+.recent-actions-head span{display:block;color:var(--ui-muted);font-size:11px;margin-top:3px}
+.recent-actions button{font-size:12px;min-height:39px;padding:9px 10px}
+@keyframes recentActionsIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.project-flying-card{transform-origin:top left;will-change:transform,opacity;filter:drop-shadow(0 8px 12px #0002)}
+/* Four different visual languages, deliberately sharing identical structure. */
+.design-style-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.design-style-option{min-width:0;min-height:112px;border:2px solid transparent;background:var(--app-pane);border-radius:15px;color:var(--ui-text);display:flex;align-items:flex-start;justify-content:center;flex-direction:column;padding:12px 13px;text-align:left;gap:3px}
+.design-style-option.active{border-color:var(--accent)}
+.design-style-option b{font-size:14px}
+.design-style-option small{font-size:11px;color:var(--ui-muted);line-height:1.3}
+.style-sample{font-size:24px;line-height:1.3;font-weight:800;color:var(--accent)}
+.sample-playful{font-family:'Comic Sans MS','Trebuchet MS',system-ui;font-size:30px}
+.sample-neon{text-shadow:0 0 4px var(--accent),0 0 13px var(--accent)}
+.sample-cinematic{font-family:Georgia,serif}
+.text-choices{display:flex;gap:8px;flex-wrap:wrap}
+.text-choices .filter-btn{flex:1;min-width:88px}
+/* Basic: reassuring and simple */
+.style-basic .page-title,.style-basic .section-title,.style-basic .brand-title{font-family:Inter,ui-sans-serif,system-ui,sans-serif;letter-spacing:-.035em}
+/* Playful: charming forms and headline styles, but readable body text */
+.style-playful .page-title,.style-playful .section-title,.style-playful .brand-title,.style-playful .hero-heading h2,.style-playful .detail-hero-content h1,.style-playful .modal-head h2,.style-playful .diary-entry h3{font-family:'Trebuchet MS','Comic Sans MS',system-ui,sans-serif;font-weight:800;letter-spacing:-.028em}
+.style-playful .hero-project,.style-playful .credit-panel,.style-playful .standalone-timer,.style-playful .profile-box,.style-playful .recent-card.expanded,.style-playful .cover-card,.style-playful .quick-btn,.style-playful .diary-entry{border-radius:25px}
+.style-playful .primary-btn,.style-playful .secondary-btn,.style-playful .pill-btn,.style-playful .filter-btn,.style-playful .timer-btn,.style-playful .nav-item{border-radius:20px}
+.style-playful .setting-section h3:before{content:'✧ ';color:var(--accent)}
+.style-playful .brand-title:after{content:' ✦';color:var(--accent);font-size:.58em}
+.style-playful .quick-btn{box-shadow:inset 0 -4px 0 #00000009}
+/* Neon: high contrast science-fiction presentation. */
+.style-neon{--neon-glow:0 0 6px rgba(var(--accent-rgb),.75),0 0 16px rgba(var(--accent-rgb),.43)}
+.style-neon .brand-title,.style-neon .page-title,.style-neon .section-title,.style-neon .credit-title,.style-neon .setting-section h3,.style-neon .hero-heading h2,.style-neon .detail-hero-content h1{letter-spacing:.025em;text-shadow:var(--neon-glow);font-family:'Arial Narrow','Trebuchet MS',Arial,sans-serif}
+.style-neon .brand-title,.style-neon .page-title,.style-neon .section-title,.style-neon .credit-title{color:var(--accent)}
+.style-neon .credit-panel,.style-neon .standalone-timer,.style-neon .profile-box,.style-neon .quick-btn,.style-neon .diary-entry,.style-neon .hero-project,.style-neon .recent-card.expanded,.style-neon .timeline-board,.style-neon .modal-sheet{border:1px solid rgba(var(--accent-rgb),.65)!important;box-shadow:0 0 11px rgba(var(--accent-rgb),.20),inset 0 0 9px rgba(var(--accent-rgb),.05)!important}
+.style-neon .timer-btn.main,.style-neon .primary-btn,.style-neon .nav-item.active,.style-neon .filter-btn.active,.style-neon .tab.active{box-shadow:0 0 14px rgba(var(--accent-rgb),.55)!important}
+.style-neon .credit-knob,.style-neon .diary-entry:before,.style-neon .timeline-line{box-shadow:0 0 10px rgba(var(--accent-rgb),.7)!important}
+.style-neon .design-style-option.active{box-shadow:0 0 10px rgba(var(--accent-rgb),.5)}
+/* Cinematic: squared-off cards and dramatic elegant headings. */
+.style-cinematic .brand-title,.style-cinematic .page-title,.style-cinematic .section-title,.style-cinematic .credit-title,.style-cinematic .setting-section h3,.style-cinematic .hero-heading h2,.style-cinematic .detail-hero-content h1,.style-cinematic .diary-entry h3,.style-cinematic .modal-head h2,.style-cinematic .recent-actions-head b{font-family:Georgia,'Times New Roman',serif;letter-spacing:-.025em;font-weight:600}
+.style-cinematic .hero-project,.style-cinematic .credit-panel,.style-cinematic .standalone-timer,.style-cinematic .profile-box,.style-cinematic .cover-card,.style-cinematic .recent-card.expanded,.style-cinematic .recent-cover,.style-cinematic .quick-btn,.style-cinematic .diary-entry,.style-cinematic .timeline-board,.style-cinematic .bottom-nav,.style-cinematic .modal-sheet,.style-cinematic .design-style-option{border-radius:3px}
+.style-cinematic .primary-btn,.style-cinematic .secondary-btn,.style-cinematic .pill-btn,.style-cinematic .timer-btn,.style-cinematic .filter-btn,.style-cinematic .tab,.style-cinematic .nav-item,.style-cinematic .search-field,.style-cinematic .select-compact{border-radius:2px}
+.style-cinematic .credit-panel,.style-cinematic .standalone-timer,.style-cinematic .profile-box,.style-cinematic .diary-entry{border:1px solid var(--ui-line)}
+.style-cinematic .section-title{font-size:20px}
+/* Readable text + form controls even when user picks light text on a light background. */
+.app-shell .field input:not([type=checkbox]):not([type=color]):not([type=range]):not([type=file]),
+.app-shell .field select,.app-shell .field textarea{background:var(--readable-field-bg);color:var(--readable-field-text);border:1px solid var(--ui-line);color-scheme:normal}
+.app-shell .field input::placeholder,.app-shell .field textarea::placeholder{color:var(--ui-muted)}
+.app-shell .field select option{color:var(--readable-field-text);background:var(--readable-field-bg)}
+.swatch input[type=color]{opacity:0;position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+/* Short, gentle modal and UI changes. */
+.modal-overlay{animation:modalOverlayIn .18s ease both}
+.modal-sheet{animation:modalSheetIn .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes modalOverlayIn{from{opacity:0}to{opacity:1}}
+@keyframes modalSheetIn{from{transform:translateY(20px);opacity:.75}to{transform:translateY(0);opacity:1}}
+@media(max-width:380px){
+ .view{padding-left:12px;padding-right:12px}
+ .recent-card.expanded{grid-template-columns:minmax(95px,32%) 1fr;gap:9px;padding:8px}
+ .recent-actions button{font-size:11px;padding:8px 7px}
+ .recent-cover-copy b{font-size:12px}
+ .hero-controls{gap:5px;padding:9px 6px}
+ .hero-controls .timer-time{min-width:94px;font-size:21px}
+ .hero-controls .timer-btn{width:35px;height:36px}
+ .hero-controls .pill-btn{padding:7px 8px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+ .project-flying-card{display:none!important}
+}
+.booking-list{display:grid;gap:10px}
+.booking-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--app-pane);padding:12px;border-radius:12px}
+.booking-row>div{min-width:0;flex:1}
+.booking-row b{display:block;overflow-wrap:anywhere}
+.booking-row small{display:block;color:var(--ui-muted);margin-top:5px;line-height:1.35}
+.booking-row button{font-size:11px;flex-shrink:0}
