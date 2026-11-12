@@ -92,7 +92,7 @@ let modalType=null,modalArgs={},tempImages={};
 let expandedRecentId=null;
 const styleOptions=[['basic','Basic','Klare, freundliche Flächen'],['playful','Playful','Rund & verspielt'],['neon','Neon','Leuchtende Sci-Fi-Akzente'],['cinematic','Cinematic','Kantig & filmisch']];
 const textModeOptions=[['auto','Automatisch'],['light','Helle Schrift'],['dark','Dunkle Schrift']];
-function save(){try{localStorage.setItem(STORAGE,JSON.stringify(state));return true}catch{toast('Speicher fast voll: bitte weniger oder kleinere Fotos verwenden.');return false}}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(state));window.PAL_SYNC?.changed();return true}catch{toast('Speicher fast voll: bitte weniger oder kleinere Fotos verwenden.');return false}}
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._timeout);toast._timeout=setTimeout(()=>t.classList.remove('show'),2700)}
 function project(id){return state.projects.find(p=>p.id===id)}
 function viewing(p){return !!p&&(p.owner==='both'||p.owner===state.user||p.visibility==='view')}
@@ -495,7 +495,7 @@ document.addEventListener('click',async ev=>{
  if(action==='clear-theme-bg'){theme().background=null;theme().backgroundMedia=null;save();render();return}
  if(action==='remove-profile-photo'){state.profileImages[state.user]=null;state.profileOriginals[state.user]=null;save();render();toast('Profilbild entfernt');return}
  if(action==='delete-project'||action==='delete-entry'||action==='delete-session'){deleteWithConfirm(action.slice(7),id);return}
- if(action==='reset-demo'){if(window.confirm('Wirklich ALLE Änderungen in dieser Testversion auf diesem Gerät verwerfen?')){state=seed();save();closeModal();render();toast('Testdaten zurückgesetzt')}return}
+ if(action==='reset-demo'){toast('Cloud-Daten können nicht über die Demo-Zurücksetzung gelöscht werden.');return}
 });
 document.addEventListener('input',async ev=>{const target=ev.target;if(target.id==='library-search'){state.libraryQuery=target.value;save();renderLibraryResultsKeepFocus()}if(target.id==='theme-dim'){theme().dim=Number(target.value);save();applyTheme()}if(target.id==='theme-blur'){theme().blur=Number(target.value);save();applyTheme()}if(target.id==='custom-accent'){theme().accent=target.value;save();applyTheme()}if(target.id==='custom-app-color'){theme().appColor=target.value;save();applyTheme()}});
 document.addEventListener('change',async ev=>{const t=ev.target;if(t.id==='library-sort'){state.librarySort=t.value;save();renderLibraryResultsKeepFocus()}if(t.id==='session-project'){const p=project(t.value);if(p){const credit=$('#session-credit');if(credit)credit.value=p.credit}}if(t.id==='profile-photo-upload'&&t.files[0]){await cropSelectedFile(t.files[0],'profile');t.value='';return}if(t.id==='theme-background'&&t.files[0]){await cropSelectedFile(t.files[0],'theme-background');t.value='';return}if(t.name==='coverFile'&&t.files[0]){await cropSelectedFile(t.files[0],'project-cover');t.value='';return}if(t.name==='backgroundFile'&&t.files[0]){await cropSelectedFile(t.files[0],'project-background');t.value='';return}if(t.id==='custom-accent'||t.id==='custom-app-color'){save();render()}});
