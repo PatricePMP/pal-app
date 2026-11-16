@@ -1,7 +1,8 @@
 'use strict';
 const crypto=require('node:crypto');
 const {send,valid,sameOrigin}=require('../lib/pal-server');
-const BUCKET='pal-private-media';
+// Vorschau-Medien werden nie in den produktiven PAL-Bucket geschrieben.
+const BUCKET=process.env.VERCEL_ENV==='preview'?'pal-preview-media':'pal-private-media';
 const VALID_PATH=/^(?:legacy|images)\/[a-f0-9-]{32,64}\.(?:jpg|png|webp)$/;
 const TYPES={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
 function config(){

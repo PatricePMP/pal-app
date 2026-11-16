@@ -1,4 +1,4 @@
-/* PAL 1.0 – Cloud-Synchronisierung mit sicherer Sicherung und Medienmigration. */
+/* PAL 1.1 – Cloud-Synchronisierung mit sicherer Sicherung und Medienmigration. */
 'use strict';
 (()=>{
  const sharedKeys=['themes','profileImages','profileOriginals','projects','entries','sessions','timer','designVersion'];
@@ -104,7 +104,7 @@
   if(!payload||typeof payload!=='object')return {payload,revision:expectedRevision};
   const hadLegacy=/"data:image\/(?:jpeg|png|webp);base64,/i.test(JSON.stringify(payload));
   if(!hadLegacy)return {payload,revision:expectedRevision};
-  show('<div class="pal-auth-card"><h1>PAL 1.0</h1><p id="pal-migrate-progress">Sichere und übertrage eure vorhandenen Bilder …</p><p class="pal-auth-hint">Bitte die App während der Übertragung geöffnet lassen. Alte Bilder bleiben bis zum erfolgreichen Cloud-Speichern erhalten.</p></div>');
+  show('<div class="pal-auth-card"><h1>PAL 1.1</h1><p id="pal-migrate-progress">Sichere und übertrage eure vorhandenen Bilder …</p><p class="pal-auth-hint">Bitte die App während der Übertragung geöffnet lassen. Alte Bilder bleiben bis zum erfolgreichen Cloud-Speichern erhalten.</p></div>');
   const result=await PAL_MEDIA.migrate(payload,(done,total)=>{
    const el=document.getElementById('pal-migrate-progress');if(el)el.textContent=`Bilder übertragen: ${done} von ${total}`;
   });
