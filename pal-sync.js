@@ -2,6 +2,9 @@
 'use strict';
 (()=>{
  const sharedKeys=['themes','profileImages','profileOriginals','projects','entries','sessions','timer','designVersion'];
+ // Nur ein vom Server bestätigter Datenstand darf als synchronisiert gelten.
+ // Ein Fingerabdruck statt einer zweiten JSON-Kopie schont den Gerätespeicher.
+ const CONFIRMED_KEY=STORAGE+'-pal-cloud-confirmed-sha256-v1';
  const panel=document.getElementById('pal-gate');
  let revision=null,lastSnapshot='',dirty=false,busy=false,halted=false,authenticated=false,flushTimer=null,lastGood=null,cloudProblem='';
  let firstBoot=true;
@@ -13,6 +16,20 @@
  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const snapshot=s=>Object.fromEntries(sharedKeys.map(k=>[k,s?.[k]??null]));
  const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ async function digest(value){
+  const bytes=new TextEncoder().encode(value);
+  const hash=await crypto.subtle.digest('SHA-256',bytes);
+  return Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join('');
+ }
+ async function isConfirmedLocal(local){
+  try{
+   const confirmed=localStorage.getItem(CONFIRMED_KEY);
+   return !!confirmed&&confirmed===await digest(JSON.stringify(local));
+  }catch{return false} // Bei Unklarheit lokale Änderungen niemals still verwerfen.
+ }
+ async function rememberConfirmed(value){
+  try{localStorage.setItem(CONFIRMED_KEY,await digest(value))}catch{}
+ }
  let labelText='Verbinde …';
  async function request(path,options={}){
   const r=await fetch(path,{credentials:'same-origin',cache:'no-store',...options,headers:{...(options.body?{'Content-Type':'application/json'}:{}),...(options.headers||{})}});
@@ -39,7 +56,7 @@
    catch(e){authScreen(errorMessage(e))}
   });
  }
- function applyCloud(remote){
+ async function applyCloud(remote){
   const previousUser=state.user==='albert'?'albert':'patrick';
   const base=cleanState(),payload=remote&&Object.keys(remote).length?remote:{};
   state=Object.assign(base,payload);state.user=previousUser;
@@ -49,8 +66,11 @@
   state.profileImages||={patrick:null,albert:null};state.profileOriginals||={patrick:null,albert:null};
   if(!state.projects.some(p=>p.id===state.pinnedProject))state.pinnedProject=state.projects[0]?.id||null;
   if(state.route==='detail'&&!state.projects.some(p=>p.id===state.projectId))state.route='home';
-  try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch{}
-  lastSnapshot=serialized();dirty=false;render();markGood();
+  let savedLocally=false;
+  try{localStorage.setItem(STORAGE,JSON.stringify(state));savedLocally=true}catch{}
+  lastSnapshot=serialized();dirty=false;render();
+  if(savedLocally)await rememberConfirmed(lastSnapshot);
+  markGood();
  }
  async function backups(remote,local){
   await PAL_MEDIA.backup('cloud-original-v10',remote);
@@ -122,7 +142,9 @@
     try{local=snapshot(JSON.parse(window.PAL_PREBOOT_LOCAL))}catch{}
    }
    await backups(payload,local);
-   if(firstBoot&&local&&!same(local,payload)){
+   // Unterschiede sind nur dann ein Konflikt, wenn seit dem letzten bestätigten
+   // Cloud-Abgleich ungesicherte lokale Änderungen entstanden sein könnten.
+   if(firstBoot&&local&&!same(local,payload)&&!(await isConfirmedLocal(local))){
     const choice=await localChoice(payload,local);
     if(choice==='merge'){
      const {merged,collisions}=mergeSafely(payload,local);
@@ -142,7 +164,7 @@
    firstBoot=false;
    const migrated=await migrateAndCommit(payload,expectedRevision);
    expectedRevision=migrated.revision;payload=migrated.payload;
-   revision=expectedRevision;applyCloud(payload);
+   revision=expectedRevision;await applyCloud(payload);
    authenticated=true;halted=false;ready();
   }catch(e){
    if(e.status===401)return authScreen();
@@ -161,7 +183,7 @@
   busy=true;dirty=false;const next=serialized();setStatus('Synchronisiere …');
   try{
    const r=await request('/api/state',{method:'PUT',body:JSON.stringify({revision,state:JSON.parse(next)})});
-   revision=r.revision;lastSnapshot=next;markGood();
+   revision=r.revision;lastSnapshot=next;await rememberConfirmed(next);markGood();
    if(serialized()!==next)dirty=true;
   }catch(e){
    dirty=true;
@@ -181,7 +203,7 @@
   try{
    const r=await request('/api/state');
    if(dirty||busy||halted)return;
-   if(r.revision!==revision){revision=r.revision;applyCloud(r.state)}else if(cloudProblem)markGood();
+   if(r.revision!==revision){revision=r.revision;await applyCloud(r.state)}else if(cloudProblem)markGood();
   }catch(e){setStatus('Cloud momentan nicht erreichbar',true)}
  }
  async function exportBackups(){
@@ -192,7 +214,9 @@
   }catch(e){setStatus('Sicherung konnte nicht gelesen werden: '+errorMessage(e),true)}
  }
  window.PAL_SYNC={changed,label,exportBackups};
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
+ document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){if(dirty&&!busy)flush()}else poll();
+ });
  setInterval(poll,5000);
  request('/api/auth').then(r=>{if(r.authenticated){authenticated=true;initialLoad()}else authScreen()}).catch(()=>authScreen('Server nicht erreichbar. Bitte Vercel-Einstellungen prüfen.'));
 })();
