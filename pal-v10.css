@@ -1,0 +1,81 @@
+/* PAL 1.0 – Live-Vorschau, installierbare App, organischer Playful-Stil */
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+/* Original Comic Sans MS, wo lokal rechtmäßig installiert; sonst frei nutzbare Comic Neue. */
+.style-playful,
+.style-playful input,.style-playful textarea,.style-playful select,.style-playful button,
+.style-playful .page-title,.style-playful .brand-title,.style-playful .section-title,
+.style-playful .credit-title,.style-playful .setting-section h3,.style-playful .hero-heading h2,
+.style-playful .detail-hero-content h1,.style-playful .diary-entry h3,
+.style-playful .modal-head h2,.style-playful .profile-box h2,
+.style-playful .recent-actions-head b,
+#modal-root.style-playful .modal-sheet,#modal-root.style-playful input,
+#modal-root.style-playful textarea,#modal-root.style-playful select,
+#modal-root.style-playful button,#modal-root.style-playful h2{
+ font-family:'Comic Sans MS','Comic Neue',cursive!important;
+ font-style:normal!important;letter-spacing:normal!important;
+ transform:none; /* keine Schrägstellung des Textes */
+}
+.style-playful .style-sample,.style-playful .sample-playful{font-family:'Comic Sans MS','Comic Neue',cursive!important}
+/* Unregelmäßige, aber konstante Ecken, niemals verzerrte Schriftebenen. */
+.style-playful .glass,.style-playful .setting-section .glass,
+.style-playful .primary-btn,.style-playful .secondary-btn,
+.style-playful .pill-btn,.style-playful .filter-btn,
+.style-playful input,.style-playful select,.style-playful textarea,
+#modal-root.style-playful input,#modal-root.style-playful select,
+#modal-root.style-playful textarea,#modal-root.style-playful .modal-sheet,
+#modal-root.style-playful button{
+ border-radius:19px 15px 22px 17px / 16px 22px 15px 20px!important;
+}
+#modal-root.style-playful .modal-sheet{border-radius:26px 20px 0 0 / 19px 26px 0 0!important}
+/* Vorschau oben im Dialog; bleibt beim Scrollen sichtbar, solange die Formularfläche Platz bietet. */
+#project-form{isolation:isolate}
+.pal-project-preview{
+ --preview-accent:#7BCFA7;--preview-fg:#203139;
+ position:sticky;top:-1px;z-index:2;
+ margin:0 0 18px;padding:12px 15px 11px;min-height:140px;
+ border:2px solid var(--preview-accent);border-radius:17px;
+ overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;
+ background:linear-gradient(130deg,color-mix(in srgb,var(--preview-accent) 27%,#e8f0ed),color-mix(in srgb,var(--preview-accent) 9%,#f3f4f1));
+ color:var(--preview-fg);box-shadow:0 7px 22px #0002;
+}
+.pal-project-preview .pal-preview-backdrop{
+ position:absolute;inset:-5%;z-index:-2;background-position:center center;background-size:cover;
+ filter:blur(var(--preview-blur,0px));
+}
+.pal-project-preview .pal-preview-backdrop[style*='url(']::after{content:'';position:absolute;inset:0;background:rgba(245,247,243,var(--preview-overlay,.5))}
+.pal-project-preview .pal-preview-kicker{
+ align-self:flex-start;font:600 11px/1.2 system-ui,sans-serif;letter-spacing:.03em;
+ border-radius:14px;background:#fffdf6df;color:#24343b;padding:6px 10px;
+}
+.pal-project-preview .pal-preview-content h3{
+ font-size:clamp(20px,5vw,27px)!important;line-height:1.08;margin:8px 0 4px;
+ color:inherit;overflow-wrap:anywhere;
+}
+.pal-project-preview .pal-preview-content p{font-size:12px;line-height:1.4;margin:0;color:inherit}
+.pal-project-preview .pal-preview-accent{
+ width:max-content;max-width:100%;font-size:10px;font-weight:700;
+ padding:5px 9px;color:#fff;background:var(--preview-accent);
+ border-radius:10px;text-shadow:0 1px 2px #0006;
+}
+.pal-project-preview.style-neon{box-shadow:0 0 15px color-mix(in srgb,var(--preview-accent) 60%,transparent);border-width:3px}
+.pal-project-preview.style-neon .pal-preview-accent{border-radius:2px;text-transform:uppercase;letter-spacing:.08em}
+.pal-project-preview.style-cinematic{border-radius:3px;border-width:1px}
+.pal-project-preview.style-cinematic .pal-preview-content h3{font-family:'Bodoni Moda',Didot,serif;font-weight:600}
+.pal-project-preview.style-playful{border-radius:26px 19px 29px 21px / 20px 27px 19px 25px}
+.pal-project-preview.style-playful .pal-preview-content h3,
+.pal-project-preview.style-playful .pal-preview-content p{font-family:'Comic Sans MS','Comic Neue',cursive}
+.pal-project-preview.text-light{background:linear-gradient(140deg,#1a2b36,#223843);color:#fff}
+.pal-project-preview.text-light .pal-preview-content{filter:drop-shadow(0 1px 2px #0009)}
+#modal-root.pal-project-modal .modal-sheet{border-top:4px solid var(--project-preview-accent,#7bcfa7)}
+#modal-root.pal-project-modal .modal-head{border-bottom-color:var(--project-preview-accent,#7bcfa7)}
+@media(max-width:480px){.pal-project-preview{min-height:125px;padding:10px 12px;margin-bottom:13px}}
+@media(prefers-reduced-motion:reduce){.pal-project-preview{transition:none}}
+
+.pal-project-preview .pal-preview-cover{
+ position:absolute;z-index:0;right:12px;top:44px;width:54px;height:72px;
+ border:2px solid #ffffffe8;border-radius:7px;box-shadow:0 2px 8px #0004;
+ background-position:center;background-size:cover;opacity:.93;pointer-events:none;
+}
+.pal-project-preview .pal-preview-content{position:relative;z-index:1;max-width:calc(100% - 73px)}
+.pal-project-preview .pal-preview-kicker,.pal-project-preview .pal-preview-accent{position:relative;z-index:1}
+.pal-project-preview.style-playful .pal-preview-cover{border-radius:11px 6px 14px 9px / 7px 15px 9px 12px}

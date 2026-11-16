@@ -1,47 +1,73 @@
-# PAL 0.8 – Cloud-Synchronisierung (Einrichtung erforderlich)
+# PAL 1.0 ♡ · Patrick & Albert
 
-Diese Version baut auf PAL 0.7 auf. HTML/CSS-Design und Funktionen bleiben erhalten. Die Cloud-Anbindung ist **noch nicht produktiv getestet**, weil sie eure echten Vercel- und Supabase-Zugangsdaten erfordert.
+**Erster installierbarer Web-App-Release auf Basis des originalen GitHub-Standes PAL 0.8.** Die vorhandenen API-Routen, eure Anmeldung und die gemeinsame Cloud-Datentabelle `public.pal_sync_state` bleiben erhalten.
 
-## Was funktioniert und was nicht
+## ⚠️ Unbedingt zuerst lesen
 
-- Gemeinsamer Datenstand für Projekte, Tagebuch, Zeiterfassung, Timer, Profile, Farben und eingebettete Bilder.
-- Änderungen werden nach ca. 350 ms gesendet und das andere Gerät fragt alle 5 Sekunden nach Updates, solange die Seite geöffnet ist.
-- **Kein echtes Live-Realtime**, keine Offline-Bearbeitung. Bei Netzfehlern erscheint eine Warnung und es wird erneut versucht. Gleichzeitig widersprüchliche Änderungen werden **nicht automatisch zusammengeführt**; stattdessen erscheint ein Konfliktdialog und eine lokale Sicherheitskopie (Browser `localStorage` unter `pal_cloud_conflict_backup`).
-- **Gemeinsamer Zugangscode, keine getrennte Authentifizierung von Patrick und Albert.** Jede Person mit dem Code kann in der App zwischen Profilen wechseln und auch als „privat“ markierte Daten im übertragenen gemeinsamen Zustand technisch auslesen. Die Anzeige filtert nur in der Benutzeroberfläche. **Für tatsächlich vertrauliche private Projekte und serverseitige Rollenrechte ist später eine individuelle Authentifizierung und echte Datentrennung nötig.**
-- **Speichergrenze: 3,5 MB für den gesamten gemeinsamen JSON-Datenstand**, inklusive Bilder. Für eine umfangreiche Fotobibliothek brauchen wir Supabase Storage und ein anderes Synchronisierungsmodell.
-- Die sechs PAL-Tabellen aus Schritt 1 bleiben erhalten, werden von dieser **Übergangsversion** aber nicht verwendet. Die Cloud-Version verwendet eine **siebte Tabelle** `pal_sync_state`, um den bestehenden 0.7-Code möglichst wenig zu verändern. Später sollte eine vollständige Migration auf die sechs relationalen Tabellen erfolgen.
+- **Dieses Paket wurde nicht auf eure produktive Vercel-/Supabase-Umgebung ausgerollt oder dort getestet.** Es enthält Code, SQL und lokale automatisierte Funktionstests. Die abschließende Kontrolle auf euren Geräten steht aus.
+- **Vor dem Upload unbedingt `PAL_1_0_Vorbereitung.sql` im RICHTIGEN Supabase-Projekt `PatricePMP's Project` ausführen.** Es legt eine einmalige Sicherung des Cloud-Stands an und richtet ausschließlich den privaten PAL-Medien-Bucket ein. Es löscht keine PAL-/PAM-Daten.
+- Wenn auf einem eurer Geräte bislang **„Nicht synchronisiert“** stand, zuerst die Informationen bzw. ein Backup dieses Geräts sichern. Die neue Version erkennt beim ersten Laden Abweichungen zum Cloud-Stand und lässt euch wählen, ob ihr fehlende lokale Daten ergänzen wollt.
+- **Niemals `SUPABASE_SERVICE_ROLE_KEY`, `PAL_SESSION_SECRET` oder `PAL_ACCESS_CODE` in GitHub-Dateien schreiben.** Die vier Vercel-Umgebungsvariablen bleiben bestehen.
+- Für die tatsächliche Online-Freigabe und eine Wiederherstellung müssen die bisherigen Backups nach erfolgreicher Migration erhalten bleiben. Ohne verifiziertes Backup vorab kein produktiver Wechsel.
 
-## Schritt 1 – SQL in Supabase ausführen
+## Installation in drei Phasen
 
-Im **gleichen Supabase-Projekt wie PAM** den Inhalt von `PAL_Supabase_Schritt_2.sql` in den SQL Editor kopieren und auf Run klicken. Es wird nur `pal_sync_state` angelegt. PAM-Daten werden nicht verändert.
+### Phase A: Datenbank vorbereiten
+1. Supabase > Projekt **PatricePMP's Project** > **SQL Editor** öffnen.
+2. Die komplette Datei **`PAL_1_0_Vorbereitung.sql`** einfügen und **Run** drücken.
+3. Das Ergebnis muss eine Zeile in `public.pal_v10_backup` und den privaten Bucket `pal-private-media` zeigen.
+4. Die bisherigen PAL-Tabellen und das bisherige SQL-Skript **nicht** neu anlegen oder zurücksetzen.
 
-## Schritt 2 – Dateien in GitHub ersetzen/ergänzen
+### Phase B: Code testen und veröffentlichen
+1. Ein vollständiges ZIP-Backup des bisherigen GitHub-Repositories **PAL 0.8** behalten.
+2. Die **Inhalte** dieses PAL-1.0-Pakets an die entsprechenden Stellen im vorhandenen GitHub-Repository `PatricePMP/pal-app` hochladen (nicht die ZIP als einzelne Datei). `api/media.js`, `pal-media.js`, `pal-v10.css`, `manifest.webmanifest` und der Ordner `icons/` sind neu. Andere gleichnamige Dateien werden aktualisiert.
+3. Wenn möglich erst mit einer **Preview-Deployment-Adresse** testen. Nicht gleichzeitig Änderungen auf mehreren Geräten vornehmen.
+4. Vercel muss das neue Deployment erfolgreich mit Status **Ready** veröffentlichen. Die bestehenden Production-Umgebungsvariablen sind:
+   - `SUPABASE_URL` (nur Root-Adresse `https://<projekt>.supabase.co`, **ohne** `/rest/v1`)
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `PAL_ACCESS_CODE`
+   - `PAL_SESSION_SECRET`
+5. Erst nach Tests auf dem produktiven `https://pal-app-mu.vercel.app` veröffentlichen. Für Preview-URLs kann eine extra Preview-Umgebung mit eigenen Variablen nötig sein; Preview gegen Produktionsdaten ist **kein isolierter Test**.
 
-Die **gesamten Dateien und Ordner** aus diesem Archiv ins Repository `pal-app` hochladen. Die bisherigen CSS-Dateien bleiben, neue Dateien sind `pal-sync.js`, `api/auth.js`, `api/state.js`, `api/logout.js`, `lib/pal-server.js`.
+### Phase C: Erste Anmeldung und Datenmigration
+1. **Zunächst nur auf einem Gerät** PAL 1.0 öffnen. Kein anderes Gerät soll parallel schreiben.
+2. Vor dem Öffnen noch bestehende lokale Bildstände/Gerätedaten sichern, soweit möglich. Auf allen Geräten die alten Browser-Daten **nicht löschen**.
+3. PAL legt vor der Umstellung eine IndexedDB-Sicherung des initialen Cloud- und Geräte-Stands an. Stimmen Gerät und Cloud nicht überein, erscheint ein Auswahlfenster. `Cloud-Stand verwenden` lässt den lokalen Stand in der Sicherung; `Fehlende lokale Daten ergänzen` führt neue Einträge zusammen und verwendet bei Projekten den neueren Änderungszeitstempel. Unklare Konflikte werden **nicht still überschrieben** und werden gesichert bzw. für Erinnerungen als lokale Fassung bewahrt.
+4. Bestehende Data-URL-Bilder werden vor dem Cloud-Commit in den privaten Supabase-Storage-Bucket übertragen. Der Upload ist anhand des Bildhashes bei Abbruch wiederaufnehmbar. Bei einem Fehler bleibt die bisherige Datenbank-Revision bestehen; Vorgang nach Beseitigung der Ursache erneut probieren.
+5. App starten, **Projekte, Tagebuch, Profilfotos, Hoch-/Querformatbilder, Zeitguthaben** kontrollieren. Zur Prüfung über **Profil > Sicherung herunterladen** aktuelle und ursprüngliche JSON-Stände exportieren.
+6. Auf einem zweiten Gerät anmelden und kontrollieren, dass Inhalte und neue Fotos sichtbar sind. Danach die Installation über **Chrome > ⋮ > App installieren** prüfen. Gegebenenfalls einmal neu laden; der Browser kann eine kurze Interaktion verlangen.
 
-**Achtung:** GitHubs normaler Datei-Upload über die Weboberfläche lädt Ordnerstrukturen nicht zuverlässig hoch. Kontrolliere, dass `api` und `lib` als **Ordner mit Dateien** im Repository existieren, oder nutze Git am PC. `PAL_Supabase_Schritt_2.sql` darf im Repo bleiben, enthält aber keine Zugangsdaten.
+## Enthaltene sechs Änderungswünsche
 
-## Schritt 3 – Vercel Environment Variables
+1. **Bilder getrennt in Supabase Storage:** private Bilddateien, nur `pal-media://…`-Referenzen im JSON; bestehende eingebettete Bilder werden mit Backups migriert. Text-/Metadaten-JSON bleibt aus Sicherheitsgründen auf 3,5 MB begrenzt, aber Bilddateien werden nicht darin gespeichert.
+2. **Live-Projektvorschau:** Formulare für neue und vorhandene Projekte zeigen sofort Designstil, Schriftmodus, Farbe, Hochformat-Cover, Querformat-Hintergrund, Abdunklung und Unschärfe. Vorschau speichert erst beim Absenden.
+3. **PWA:** Manifest, App-Icons mit 192/512 px sowie Maskable-Icon, Standalone-Start. **Kein Service Worker:** Ohne Netz bleibt die gemeinsame Cloud gesperrt. Eine Offline-Fähigkeit wird nicht behauptet.
+4. **Hoch- und Querformat unabhängig:** Bibliothek nutzt weiter `coverImage`, Startseitenkarte und Detail-Header verwenden `backgroundImage`, bei fehlendem Querformat ein neutral gestaltetes Ersatzbild.
+5. **Veraltete Demohinweise entfernt:** echter Cloud-Status, korrekter gemeinsamer Zugangscode, Backup-Export, kein gefährlicher Testdaten-Reset.
+6. **Playful:** echte **Comic Sans MS**, **wenn lokal auf dem Gerät installiert**, sonst die freie **Comic Neue** (Google Fonts), organische ruhige Ecken und gerade, nicht verzerrte Schrift. Es werden keine proprietären Schriftdateien verteilt.
 
-Vercel → Projekt `pal-app` → Settings → Environment Variables; diese vier Variablen (Environment: Production) ergänzen:
+## Sicherheit und technische Grenzen
 
-- `SUPABASE_URL`: Project URL **des bestehenden PAM-Supabase-Projekts** (z. B. `https://<projekt>.supabase.co`).
-- `SUPABASE_SERVICE_ROLE_KEY`: **Legacy `service_role` JWT** aus Supabase → Project Settings → API Keys. **Nur in Vercel als Environment Variable verwenden, niemals in JavaScript, GitHub oder im Chat teilen.** Dieser Schlüssel kann PAM-Daten lesen und ändern; die PAL-API beschränkt ihre Datenbankabfragen im Code auf `pal_sync_state`.
-- `PAL_ACCESS_CODE`: eigenen **langen, zufälligen, gemeinsamen Zugangscode** mit mindestens 20 Zeichen wählen. Diesen Code verwenden Patrick und Albert im PAL-Anmeldefenster. Nicht mit einem anderen App-Code wiederverwenden.
-- `PAL_SESSION_SECRET`: **weiteren unabhängigen langen Zufallswert**, mindestens 32 Zeichen, für Cookie-Signaturen. Diesen Wert nicht als Zugangscode verwenden.
+- Der **gemeinsame Zugangscode** schützt PAL vor gewöhnlichem unberechtigtem Zugriff, bietet aber **keine getrennten privaten Accounts** für Patrick und Albert. Das interne `owner`-/`visibility`-Modell ist weiterhin eine UI-Trennung, **keine echte Zugriffssicherung** pro Person.
+- Supabase-Service-Role-Zugriff findet ausschließlich in Serverrouten statt. Bilder liegen in einem **privaten** Bucket; der Upload nutzt kurzlebige signierte URLs, der Abruf geschieht über eine auf Login-Cookie überprüfte `/api/media`-Route. Keine Supabase-Schlüssel im Browser.
+- Die SQL-Datei erstellt das einmalige Backup `public.pal_v10_backup` (vor Migration), ohne Datensätze aus anderen Tabellen zu verändern. Backups in IndexedDB liegen jeweils nur auf dem betreffenden Gerät. Beim Löschen der Browserdaten gehen diese Geräte-Backups verloren; deshalb exportieren.
+- Vorhandene, zeitgleich geänderte Daten sind nicht vollständig automatisch zusammenführbar. PAL 1.0 sichert solche Fälle und fragt bei Abweichungen nach. Individuelle Benutzeranmeldung, Berechtigungsprüfung pro Profil, automatische Bucket-Bereinigung und ein vollständiger Transaktionsabgleich wären eigenständige weitere Entwicklungsschritte.
+- Der Bucket erlaubt nur JPEG/PNG/WebP bis 17 MB pro Datei. Die App komprimiert hochgeladene Bilder vor dem Storage-Upload (bisherige Zuschneidefunktion bleibt).
+- Eine tatsächliche Verifikation des Android-Installationsdialogs, des Foto-Croppings und der Supabase-Storage-Integration ist erst nach Deployment möglich. **Bis dahin ist dies ein fertig vorbereitetes Test-/Release-Paket, keine bestätigte produktive Freigabe.**
 
-Variablen nur auf dem Server verwenden. Danach auf Vercel **Redeploy** ausführen, damit die Variablen für die Serverless-Funktionen gelten. Keine Werte mit Präfix `NEXT_PUBLIC_` oder `VITE_` verwenden.
+## Enthaltene Dateien
 
-## Schritt 4 – Prüfung
+| Datei | Aufgabe |
+|---|---|
+| `PAL_1_0_Vorbereitung.sql` | Einmaliges Cloud-Backup und privater Storage-Bucket |
+| `api/media.js` | Geschützte Ausgabe und signierte Upload-URLs für Bilddateien |
+| `pal-media.js` | Browser-Uploads, Medienmigration, Geräte-Backups |
+| `pal-sync.js` | Cloud-Synchronisierung, Vergleich lokaler Stände, Migration und Konflikte |
+| `app.js` | Projektgestaltung, Bildverweise, verlässlicher Status, neue Medien-Uploads |
+| `pal-v10.css` | Playful-Schrift/Konturen und Live-Projektvorschau |
+| `manifest.webmanifest`, `icons/` | Installierbare Web-App |
+| Übrige Dateien | PAL-0.8-Funktionen und bestehende Layouts |
 
-1. PAL-Adresse im privaten Browserfenster öffnen → Eingabemaske für den gemeinsamen Zugangscode.
-2. Mit dem `PAL_ACCESS_CODE` anmelden. Es sollten **keine Demo-Projekte** erscheinen.
-3. Auf Gerät A ein kleines gemeinsames Projekt anlegen. Auf Gerät B anmelden und einige Sekunden später sehen, ob es erscheint.
-4. Eine kleine Zeitbuchung anlegen und auf dem zweiten Gerät prüfen; dann Timer starten und auf zweitem Gerät kontrollieren.
-5. Test mit parallelen Änderungen (Konflikthinweis beachten). Erst danach produktiv verwenden.
+## Lokale automatisierte Tests (kein Ersatz für Produktivtest)
 
-## Sicherheit und Betrieb
-
-Die Anmeldung nutzt ein signiertes `HttpOnly`-Cookie (30 Tage; `Secure`, `SameSite=Lax`). Der Vercel-Server prüft den gemeinsamen Code; die DB-Schlüssel bleiben serverseitig. Für eine öffentlich erreichbare App sind zusätzlich Rate-Limits und eine echte individuelle Benutzeranmeldung empfehlenswert. **Die App ist mit diesem gemeinsamen Code nicht für private Informationen zwischen Patrick und Albert geeignet.** PAM und PAL teilen weiterhin eine Supabase-Instanz, daher sind die Schlüssel besonders sorgfältig aufzubewahren.
-
-Bei Problemen zuerst auf Vercel in den Function Logs nach Fehlern suchen. Ohne die SQL-Tabelle oder Environment Variables **bleibt PAL bewusst gesperrt**, statt auf lokalen Speicher zurückzufallen.
+Die Entwicklungsversion wurde mit Node.js-Syntaxprüfung und zwei isolierten Smoke-Tests geprüft: getrennte Bilder/Rendern von Home, Detail und Timeline; Profilstatus; Live-Vorschau; idempotente Medienübertragung; Login-Pflicht, Origin-/Pfadprüfung und private Medienausgabe im API-Mock. **Ein echter End-to-End-Test gegen Supabase/Vercel und ein Test im Android-Chrome waren in der Entwicklungsumgebung nicht möglich.**

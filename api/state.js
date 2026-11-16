@@ -16,7 +16,7 @@ module.exports=async(req,res)=>{
   if(Object.keys(body.state).some(k=>!allowed.includes(k)))return send(res,400,{error:'Unbekannte Datenfelder'});
   if(!Array.isArray(body.state.projects)||!Array.isArray(body.state.entries)||!Array.isArray(body.state.sessions))return send(res,400,{error:'Datenstruktur unvollständig'});
   const raw=JSON.stringify(body.state);
-  if(Buffer.byteLength(raw,'utf8')>MAX_BYTES)return send(res,413,{error:'Zu viele oder zu große Bilder. Der Cloud-Speicher dieser Version ist auf 3,5 MB pro Datenstand begrenzt.'});
+  if(Buffer.byteLength(raw,'utf8')>MAX_BYTES)return send(res,413,{error:'Zu viele Text- oder Metadaten (maximal 3,5 MB je Cloud-Datenstand). Bilder werden getrennt gespeichert.'});
   const rows=await database(`pal_sync_state?singleton_id=eq.1&revision=eq.${body.revision}`,{method:'PATCH',headers:{'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({state:body.state,revision:body.revision+1,updated_at:new Date().toISOString()})});
   if(!Array.isArray(rows)||rows.length!==1)return send(res,409,{error:'Auf dem anderen Gerät wurden inzwischen Änderungen gespeichert. Bitte Cloud-Version neu laden.'});
   return send(res,200,{revision:rows[0].revision});
