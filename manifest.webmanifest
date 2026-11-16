@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "PAL – Patrick & Albert",
+  "short_name": "PAL",
+  "description": "Unsere Projekte, unsere Zeit, unsere Erinnerungen",
+  "lang": "de-DE",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F4EB",
+  "theme_color": "#F7F4EB",
+  "icons": [
+    {"src":"/icons/pal-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/icons/pal-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"/icons/pal-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
+}
