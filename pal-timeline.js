@@ -35,7 +35,7 @@
   return (who==='all'||(who==='shared'?p.owner==='both':p.owner===who||p.owner==='both'))&&(category==='all'||p.category===category)&&(status==='all'||p.status===status);
  });}
  function layout(items){const occupied=[],out=[];for(const p of items){let row=occupied.findIndex(end=>end<p.startDate);if(row<0){row=occupied.length;occupied.push('0000-00-00')}occupied[row]=p.effectiveEnd;out.push({...p,row})}return {out,count:occupied.length}}
- function viewDate(date){const vp=el('pal-tl-viewport');if(!vp||!lastSpan||!validDate(date))return;const x=lastSpan.left+days(lastSpan.start,date)*lastSpan.unit;vp.scrollLeft=Math.max(0,x-vp.clientWidth*.38)}
+ function viewDate(date,alignRight=false){const vp=el('pal-tl-viewport');if(!vp||!lastSpan||!validDate(date))return;const x=lastSpan.left+days(lastSpan.start,date)*lastSpan.unit;vp.scrollLeft=Math.max(0,x-(alignRight?vp.clientWidth-32:vp.clientWidth*.38))}
  function mount({preserve=false}={}){
   const vp=el('pal-tl-viewport'),plane=el('pal-tl-plane');if(!vp||!plane)return;
   let anchor=null;
@@ -45,7 +45,7 @@
   const {out,count}=layout(ps),unit=scale==='week'?18:scale==='year'?1.85:8,edge=24,rowHeight=51,top=49;
   const min=ps.length?ps.reduce((m,p)=>p.startDate<m?p.startDate:m,ps[0].startDate):now;
   const max=ps.length?ps.reduce((m,p)=>p.effectiveEnd>m?p.effectiveEnd:m,ps[0].effectiveEnd):now;
-  const start=add(monthStart(min),scale==='year'?-45:-18),end=add(max,scale==='year'?170:80);
+  const start=add(monthStart(min),scale==='year'?-45:-18),end=add(now,5); // nur Vergangenheit und ein schmaler Platz für den Heute-Marker
   const width=Math.max(vp.clientWidth,days(start,end)*unit+edge*2),height=Math.max(vp.clientHeight,top+Math.max(1,count)*rowHeight+20);
   plane.replaceChildren();plane.style.width=width+'px';plane.style.height=height+'px';
   const scaleEl=document.createElement('div');scaleEl.className='timescale';scaleEl.style.width=width+'px';plane.append(scaleEl);
@@ -66,7 +66,7 @@
   if(now>=start&&now<=end){const line=document.createElement('div');line.className='today';line.style.left=edge+days(start,now)*unit+'px';const badge=document.createElement('span');badge.className='today-label';badge.textContent='Heute';line.append(badge);plane.append(line)}
   lastSpan={start,left:edge,unit};lastViewport=vp;el('pal-tl-tally').textContent=out.length+' Projekte · '+count+' Zeilen';el('pal-tl-range').textContent=scale==='year'?'Jahresübersicht':scale==='week'?'Wochenübersicht':'Monatsübersicht';
   if(!out.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Keine Projekte für diese Filterkombination.';plane.append(empty)}
-  if(anchor&&anchor>=start&&anchor<=end)viewDate(anchor);else viewDate(now);
+  if(anchor&&anchor>=start&&anchor<=end)viewDate(anchor);else viewDate(now,true);
  }
  function fullscreen(on){const shell=el('pal-journey-shell'),root=el('pal-journey');if(on&&shell&&root&&!fullShell){fullParent=root.parentElement;fullShell=shell;document.body.append(root);shell.classList.add('full');document.body.classList.add('pal-tl-fullscreen');shell.querySelector('[data-tl="full"]').textContent='⤢';requestAnimationFrame(()=>mount({preserve:true}));return}
   if(!on&&fullShell){const active=fullShell;active.classList.remove('full');document.body.classList.remove('pal-tl-fullscreen');if(fullParent?.isConnected)fullParent.append(root);else root?.remove();fullShell=null;fullParent=null;requestAnimationFrame(()=>mount({preserve:true}))}
@@ -76,7 +76,7 @@
   const key=select.dataset.tlFilter;const mapping={person:'timelineFilter',category:'timelineCategory',status:'timelineStatus'};if(!mapping[key])return;state[mapping[key]]=select.value;save();mount({preserve:true});
  });
  document.addEventListener('click',e=>{const button=e.target.closest?.('[data-tl]');if(button){
-  const action=button.dataset.tl;if(action==='today')viewDate(today());if(action==='start'){const vp=el('pal-tl-viewport');if(vp){vp.scrollLeft=0;vp.scrollTop=0}}
+  const action=button.dataset.tl;if(action==='today')viewDate(today(),true);if(action==='start'){const vp=el('pal-tl-viewport');if(vp){vp.scrollLeft=0;vp.scrollTop=0}}
   if(action==='scale'){state.timelineScale=button.dataset.value;save();el('pal-journey-shell')?.querySelectorAll('[data-tl="scale"]').forEach(x=>x.classList.toggle('active',x===button));mount({preserve:true})}
   if(action==='full')fullscreen(!fullShell);
  }
